@@ -70,10 +70,13 @@ workers:
       enabled: true
       service_name: agentmemory
       exporter: memory
-      sampling_ratio: 1.0
+      # 0.1 / console-off, per #519: at full sampling the log subscriber
+      # falls behind, its own "subscriber lagged" WARN re-enters the stream
+      # it cannot drain, and the loop wrote 137 GB. Do not raise these.
+      sampling_ratio: 0.1
       metrics_enabled: true
       logs_enabled: true
-      logs_console_output: true
+      logs_console_output: false
 EOF
 chown "$RUN_AS" "$III_CONFIG"
 
