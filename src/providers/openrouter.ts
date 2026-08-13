@@ -59,9 +59,30 @@ export class OpenRouterProvider implements MemoryProvider {
 
     const data = (await response.json()) as Record<string, unknown>;
     const choices = data.choices as
-      | Array<{ message: { content: string } }>
+      | Array<{
+        message: {
+          content: string | null;
+          reasoning?: string | null;
+          reasoning_details?: Array<{ text?: string }> | null;
+        };
+      }>
       | undefined;
-    const content = choices?.[0]?.message?.content;
+    const msg = choices?.[0]?.message;
+    let content = msg?.content;
+    // Reasoning models on OpenRouter (DeepSeek V4/R1, etc.) return the final
+    // answer in `message.content` but, when reasoning exhausts the token
+    // budget (finish_reason:"length"), `content` is null and only
+    // `reasoning`/`reasoning_details` are populated. Fall back so summarize
+    // chunk calls do not hard-fail with empty_provider_response. The
+    // reasoning text is degraded (truncated) in the length case, but the
+    // chunk+reduce layer tolerates partial output better than a hard throw.
+    if (!content) {
+      const details = msg?.reasoning_details;
+      content =
+        (Array.isArray(details)
+          ? details.find((d) => d.text)?.text
+          : undefined) ?? msg?.reasoning ?? undefined;
+    }
     if (!content) {
       throw new Error(
         `${this.name} returned unexpected response: ${JSON.stringify(data).slice(0, 200)}`,

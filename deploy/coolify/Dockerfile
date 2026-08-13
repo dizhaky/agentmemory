@@ -19,6 +19,12 @@ RUN printf '{"name":"agentmemory-deploy","version":"1.0.0","private":true,"overr
  && npm install "@agentmemory/agentmemory@${AGENTMEMORY_VERSION}" --omit=optional --no-fund --no-audit \
  && ln -s /opt/agentmemory/node_modules/.bin/agentmemory /usr/local/bin/agentmemory
 
+# Reasoning-model fallback: OpenRouter reasoning models return content:null
+# with the answer in message.reasoning when finish_reason:"length". Fall back
+# so mem::summarize chunk calls do not hard-fail (empty_provider_response).
+COPY openrouter-reasoning-patch.mjs /tmp/openrouter-reasoning-patch.mjs
+RUN node /tmp/openrouter-reasoning-patch.mjs && rm /tmp/openrouter-reasoning-patch.mjs
+
 ENV AGENTMEMORY_III_VERSION=${III_VERSION} \
     TINI_SUBREAPER=1
 
