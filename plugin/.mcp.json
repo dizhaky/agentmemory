@@ -1,8 +1,8 @@
 {
   "mcpServers": {
     "agentmemory": {
-      "command": "/opt/homebrew/bin/npx",
-      "args": ["-y", "@agentmemory/mcp"],
+      "command": "/opt/homebrew/bin/node",
+      "args": ["/Users/danizhaky/Dev/agentmemory/dist/standalone.mjs"],
       "env": {
         "PATH": "/opt/homebrew/bin:/Users/danizhaky/.hermes/node/bin:/Users/danizhaky/.nvm/versions/node/v24.11.0/bin:/Users/danizhaky/.local/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin",
         "AGENTMEMORY_URL": "${AGENTMEMORY_URL:-http://localhost:3111}",
