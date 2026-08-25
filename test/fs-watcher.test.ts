@@ -85,6 +85,7 @@ describe("FilesystemWatcher", { retry: 2 }, () => {
       logger: { info: vi.fn(), warn: vi.fn(), error: vi.fn() },
     });
     w.start();
+    await wait(200);
     try {
       unlinkSync(join(root, "old.md"));
       await wait(1500);

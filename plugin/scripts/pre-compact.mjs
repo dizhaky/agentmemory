@@ -14,7 +14,7 @@ function resolveProject(cwd) {
 				"pipe",
 				"ignore"
 			],
-			timeout: 500
+			timeout: 3e3
 		}).toString().trim();
 		if (top) return basename(top);
 	} catch {}
