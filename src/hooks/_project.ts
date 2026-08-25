@@ -10,7 +10,7 @@ export function resolveProject(cwd?: string): string {
     const top = execSync("git rev-parse --show-toplevel", {
       cwd: dir,
       stdio: ["ignore", "pipe", "ignore"],
-      timeout: 500,
+      timeout: 3000,
     })
       .toString()
       .trim();
