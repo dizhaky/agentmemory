@@ -98,9 +98,10 @@ describe("resolveProject — hook project basename resolver", () => {
     expect(resolveProject("   ")).toBe(REPO_NAME);
   });
 
-  it("keeps git resolution within the telemetry hook latency budget", () => {
+  it("resolves without spawning a latency-bound git subprocess", () => {
     const source = readFileSync("src/hooks/_project.ts", "utf8");
-    const timeout = source.match(/timeout:\s*(\d+)/)?.[1];
-    expect(Number(timeout)).toBeLessThanOrEqual(500);
+    expect(source).not.toContain("child_process");
+    expect(source).not.toContain("execSync");
+    expect(source).toContain(".git");
   });
 });
