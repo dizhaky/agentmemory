@@ -4,6 +4,7 @@ import { KV } from "../state/schema.js";
 
 /** Window for the recent failure rate surfaced in health output. */
 const METRICS_WINDOW_MS = 24 * 60 * 60 * 1000;
+const METRICS_BUCKET_MS = 60 * 1000;
 
 export class MetricsStore {
   private cache = new Map<string, FunctionMetrics>();
@@ -39,9 +40,32 @@ export class MetricsStore {
       m.failureCount += 1;
       m.lastFailureAt = now;
     }
-    m.recentCalls = [...(m.recentCalls ?? []), { t: now, ok: success }].filter(
-      (call) => now - call.t <= METRICS_WINDOW_MS,
+    const cutoffBucket =
+      Math.floor((now - METRICS_WINDOW_MS) / METRICS_BUCKET_MS) * METRICS_BUCKET_MS;
+    const buckets = (m.recentBuckets ?? []).filter(
+      (bucket) => bucket.t >= cutoffBucket,
     );
+    for (const call of m.recentCalls ?? []) {
+      if (call.t < now - METRICS_WINDOW_MS) continue;
+      const t = Math.floor(call.t / METRICS_BUCKET_MS) * METRICS_BUCKET_MS;
+      let bucket = buckets.find((candidate) => candidate.t === t);
+      if (!bucket) {
+        bucket = { t, success: 0, failure: 0 };
+        buckets.push(bucket);
+      }
+      bucket[call.ok ? "success" : "failure"] += 1;
+    }
+    buckets.sort((a, b) => a.t - b.t);
+    delete m.recentCalls;
+
+    const currentBucket = Math.floor(now / METRICS_BUCKET_MS) * METRICS_BUCKET_MS;
+    let bucket = buckets.at(-1);
+    if (!bucket || bucket.t !== currentBucket) {
+      bucket = { t: currentBucket, success: 0, failure: 0 };
+      buckets.push(bucket);
+    }
+    bucket[success ? "success" : "failure"] += 1;
+    m.recentBuckets = buckets;
     if (qualityScore !== undefined) {
       const prevQualityCalls = this.qualityCallCounts.get(functionId) || 0;
       m.avgQualityScore =
@@ -70,16 +94,28 @@ export class MetricsStore {
     for (const [id, m] of this.cache) merged.set(id, m);
     const now = Date.now();
     return Array.from(merged.values()).map((m) => {
-      const recent = (m.recentCalls ?? []).filter(
+      const legacyRecent = (m.recentCalls ?? []).filter(
         (c) => now - c.t <= METRICS_WINDOW_MS,
       );
-      const { recentCalls: _ring, ...rest } = m;
+      const cutoffBucket =
+        Math.floor((now - METRICS_WINDOW_MS) / METRICS_BUCKET_MS) * METRICS_BUCKET_MS;
+      const recentBuckets = (m.recentBuckets ?? []).filter(
+        (bucket) => bucket.t >= cutoffBucket,
+      );
+      const bucketCalls = recentBuckets.reduce(
+        (sum, bucket) => sum + bucket.success + bucket.failure,
+        0,
+      );
+      const failures = recentBuckets.reduce(
+        (sum, bucket) => sum + bucket.failure,
+        legacyRecent.filter((call) => !call.ok).length,
+      );
+      const recentCallCount = bucketCalls + legacyRecent.length;
+      const { recentCalls: _calls, recentBuckets: _buckets, ...rest } = m;
       return {
         ...rest,
-        recentCallCount: recent.length,
-        recentFailureRate: recent.length
-          ? recent.filter((c) => !c.ok).length / recent.length
-          : 0,
+        recentCallCount,
+        recentFailureRate: recentCallCount ? failures / recentCallCount : 0,
       };
     });
   }

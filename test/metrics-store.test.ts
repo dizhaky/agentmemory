@@ -41,6 +41,18 @@ describe("MetricsStore", () => {
     expect(m?.recentFailureRate).toBe(1 / 51);
   });
 
+  it("aggregates high-volume outcomes into bounded minute buckets", async () => {
+    const store = new MetricsStore(fakeKv());
+    for (let i = 0; i < 2_000; i++) await store.record("busy", 1, i % 10 !== 0);
+
+    const internal = await store.get("busy");
+    expect(internal?.recentBuckets).toHaveLength(1);
+    expect(internal?.recentCalls).toBeUndefined();
+    const visible = (await store.getAll()).find((entry) => entry.functionId === "busy");
+    expect(visible?.recentCallCount).toBe(2_000);
+    expect(visible?.recentFailureRate).toBe(0.1);
+  });
+
   it("getAll ignores failures older than the 24h window", async () => {
     // Simulate a counter polluted by a long-fixed bug: 256 old failures,
     // one outcome ring entry outside the window.
