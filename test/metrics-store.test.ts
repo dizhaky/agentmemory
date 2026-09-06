@@ -1,4 +1,4 @@
-import { describe, it, expect } from "vitest";
+import { describe, it, expect, vi } from "vitest";
 import { MetricsStore } from "../src/eval/metrics-store.js";
 import type { StateKV } from "../src/state/kv.js";
 import type { FunctionMetrics } from "../src/types.js";
@@ -51,6 +51,27 @@ describe("MetricsStore", () => {
     const visible = (await store.getAll()).find((entry) => entry.functionId === "busy");
     expect(visible?.recentCallCount).toBe(2_000);
     expect(visible?.recentFailureRate).toBe(0.1);
+  });
+
+  it("reuses the current minute bucket after the clock moves backward", async () => {
+    const store = new MetricsStore(fakeKv());
+    const older = 1_800_000_000_000;
+    const newer = older + 60_000;
+    const clock = vi.spyOn(Date, "now");
+
+    clock.mockReturnValue(newer);
+    await store.record("rollback", 1, true);
+    clock.mockReturnValue(older);
+    await store.record("rollback", 1, true);
+    await store.record("rollback", 1, false);
+
+    const buckets = (await store.get("rollback"))?.recentBuckets ?? [];
+    expect(buckets).toHaveLength(2);
+    expect(buckets.find((bucket) => bucket.t === older)).toMatchObject({
+      success: 1,
+      failure: 1,
+    });
+    clock.mockRestore();
   });
 
   it("getAll ignores failures older than the 24h window", async () => {

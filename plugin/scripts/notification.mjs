@@ -1,21 +1,24 @@
 #!/usr/bin/env node
-import { existsSync, realpathSync } from "node:fs";
-import { basename, dirname, join } from "node:path";
+import { execFile } from "node:child_process";
+import { basename } from "node:path";
 //#region src/hooks/_project.ts
-function resolveProject(cwd) {
+const PROJECT_RESOLVE_TIMEOUT_MS = 250;
+async function resolveProject(cwd) {
 	const explicit = process.env["AGENTMEMORY_PROJECT_NAME"];
 	if (explicit && explicit.trim()) return explicit.trim();
 	const dir = cwd && cwd.trim() ? cwd : process.cwd();
-	try {
-		let current = realpathSync(dir);
-		while (true) {
-			if (existsSync(join(current, ".git"))) return basename(current);
-			const parent = dirname(current);
-			if (parent === current) break;
-			current = parent;
-		}
-	} catch {}
-	return basename(dir);
+	return new Promise((resolve) => {
+		execFile("git", ["rev-parse", "--show-toplevel"], {
+			cwd: dir,
+			encoding: "utf8",
+			maxBuffer: 4096,
+			timeout: PROJECT_RESOLVE_TIMEOUT_MS,
+			windowsHide: true
+		}, (error, stdout) => {
+			const toplevel = stdout.trim();
+			resolve(!error && toplevel ? basename(toplevel) : basename(dir));
+		});
+	});
 }
 //#endregion
 //#region src/hooks/notification.ts
@@ -52,7 +55,7 @@ async function main() {
 		body: JSON.stringify({
 			hookType: "notification",
 			sessionId,
-			project: resolveProject(data.cwd),
+			project: await resolveProject(data.cwd),
 			cwd: data.cwd || process.cwd(),
 			timestamp: (/* @__PURE__ */ new Date()).toISOString(),
 			data: {

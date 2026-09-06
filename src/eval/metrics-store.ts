@@ -55,16 +55,16 @@ export class MetricsStore {
       }
       bucket[call.ok ? "success" : "failure"] += 1;
     }
-    buckets.sort((a, b) => a.t - b.t);
     delete m.recentCalls;
 
     const currentBucket = Math.floor(now / METRICS_BUCKET_MS) * METRICS_BUCKET_MS;
-    let bucket = buckets.at(-1);
-    if (!bucket || bucket.t !== currentBucket) {
+    let bucket = buckets.find((candidate) => candidate.t === currentBucket);
+    if (!bucket) {
       bucket = { t: currentBucket, success: 0, failure: 0 };
       buckets.push(bucket);
     }
     bucket[success ? "success" : "failure"] += 1;
+    buckets.sort((a, b) => a.t - b.t);
     m.recentBuckets = buckets;
     if (qualityScore !== undefined) {
       const prevQualityCalls = this.qualityCallCounts.get(functionId) || 0;

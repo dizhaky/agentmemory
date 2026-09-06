@@ -42,31 +42,31 @@ describe("resolveProject — hook project basename resolver", () => {
     }
   });
 
-  it("AGENTMEMORY_PROJECT_NAME env wins over everything", () => {
+  it("AGENTMEMORY_PROJECT_NAME env wins over everything", async () => {
     process.env.AGENTMEMORY_PROJECT_NAME = "my-override";
-    expect(resolveProject("/var/log")).toBe("my-override");
-    expect(resolveProject(repoDir)).toBe("my-override");
+    expect(await resolveProject("/var/log")).toBe("my-override");
+    expect(await resolveProject(repoDir)).toBe("my-override");
   });
 
-  it("trims whitespace on env override", () => {
+  it("trims whitespace on env override", async () => {
     process.env.AGENTMEMORY_PROJECT_NAME = "  spaced  ";
-    expect(resolveProject("/var/log")).toBe("spaced");
+    expect(await resolveProject("/var/log")).toBe("spaced");
   });
 
-  it("ignores empty env override", () => {
+  it("ignores empty env override", async () => {
     process.env.AGENTMEMORY_PROJECT_NAME = "   ";
-    expect(resolveProject(repoDir)).toBe(REPO_NAME);
+    expect(await resolveProject(repoDir)).toBe(REPO_NAME);
   });
 
-  it("returns git toplevel basename when cwd is inside a repo", () => {
-    expect(resolveProject(repoDir)).toBe(REPO_NAME);
+  it("returns git toplevel basename when cwd is inside a repo", async () => {
+    expect(await resolveProject(repoDir)).toBe(REPO_NAME);
   });
 
-  it("returns git toplevel basename from a nested subdir", () => {
-    expect(resolveProject(nestedDir)).toBe(REPO_NAME);
+  it("returns git toplevel basename from a nested subdir", async () => {
+    expect(await resolveProject(nestedDir)).toBe(REPO_NAME);
   });
 
-  it("falls back to basename(cwd) when not in a git repo", () => {
+  it("falls back to basename(cwd) when not in a git repo", async () => {
     // mkdtemp lands under os.tmpdir(), which is not always outside a repository —
     // TMPDIR pointed at a working directory makes git walk up and find one, and the
     // fallback under test never runs. Ceiling the upward search at the parent so the
@@ -76,7 +76,7 @@ describe("resolveProject — hook project basename resolver", () => {
     const priorCeiling = process.env.GIT_CEILING_DIRECTORIES;
     process.env.GIT_CEILING_DIRECTORIES = dirname(dir);
     try {
-      expect(resolveProject(dir)).toBe(basename(dir));
+      expect(await resolveProject(dir)).toBe(basename(dir));
     } finally {
       if (priorCeiling === undefined) {
         delete process.env.GIT_CEILING_DIRECTORIES;
@@ -87,21 +87,21 @@ describe("resolveProject — hook project basename resolver", () => {
     }
   });
 
-  it("defaults to process.cwd() when no cwd argument given", () => {
+  it("defaults to process.cwd() when no cwd argument given", async () => {
     vi.spyOn(process, "cwd").mockReturnValue(repoDir);
-    expect(resolveProject()).toBe(REPO_NAME);
+    expect(await resolveProject()).toBe(REPO_NAME);
   });
 
-  it("defaults to process.cwd() when cwd argument is empty", () => {
+  it("defaults to process.cwd() when cwd argument is empty", async () => {
     vi.spyOn(process, "cwd").mockReturnValue(repoDir);
-    expect(resolveProject("")).toBe(REPO_NAME);
-    expect(resolveProject("   ")).toBe(REPO_NAME);
+    expect(await resolveProject("")).toBe(REPO_NAME);
+    expect(await resolveProject("   ")).toBe(REPO_NAME);
   });
 
-  it("resolves without spawning a latency-bound git subprocess", () => {
+  it("uses a latency-bounded asynchronous git lookup", async () => {
     const source = readFileSync("src/hooks/_project.ts", "utf8");
-    expect(source).not.toContain("child_process");
-    expect(source).not.toContain("execSync");
-    expect(source).toContain(".git");
+    expect(source).toContain("node:child_process");
+    expect(source).not.toContain("execFileSync");
+    expect(source).toContain("timeout: PROJECT_RESOLVE_TIMEOUT_MS");
   });
 });

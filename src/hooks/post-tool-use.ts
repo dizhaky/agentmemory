@@ -44,7 +44,7 @@ async function main() {
     body: JSON.stringify({
       hookType: "post_tool_use",
       sessionId,
-      project: resolveProject(data.cwd as string | undefined),
+      project: await resolveProject(data.cwd as string | undefined),
       cwd: (data.cwd as string | undefined) || process.cwd(),
       timestamp: new Date().toISOString(),
       data: {
