@@ -52,11 +52,6 @@ const CLAUDE_CODE_CMD = `claude mcp add agentmemory -- npx -y @agentmemory/mcp`;
 const COPILOT_CLI_CMD = `agentmemory connect copilot-cli`;
 const WARP_CMD = `agentmemory connect warp`;
 
-const HERMES_YAML = `plugins:
-  - name: agentmemory
-    path: agentmemory/integrations/hermes
-    config:
-      base_url: http://localhost:3111`;
 
 const OPENCLAW_YAML = `plugins:
   - id: agentmemory
@@ -296,7 +291,7 @@ export function AgentInstall() {
         aria-expanded={showMore}
         onClick={() => setShowMore((v) => !v)}
       >
-        {showMore ? "— HIDE OTHER SHAPES" : "+ OPENCODE · CLINE · CONTINUE · ZED · DROID · QWEN · ANTIGRAVITY · KIRO · HERMES · OPENCLAW · VS CODE"}
+        {showMore ? "— HIDE OTHER SHAPES" : "+ OPENCODE · CLINE · CONTINUE · ZED · DROID · QWEN · ANTIGRAVITY · KIRO · OPENCLAW · VS CODE"}
       </button>
 
       {showMore && (
@@ -315,11 +310,6 @@ export function AgentInstall() {
             title="CODEX CLI (TOML)"
             hint="~/.codex/config.toml"
             body={CODEX_TOML}
-          />
-          <Snippet
-            title="HERMES"
-            hint="integrations/hermes — plugin.yaml"
-            body={HERMES_YAML}
           />
           <Snippet
             title="OPENCLAW"

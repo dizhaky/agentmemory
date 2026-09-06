@@ -7,7 +7,7 @@
     코딩 에이전트가 모든 것을 기억합니다. 더 이상 다시 설명할 필요가 없습니다.
     Built on <a href="https://github.com/iii-hq/iii">iii engine</a>
   </strong><br/>
-  Claude Code, Cursor, Gemini CLI, Codex CLI, Hermes, OpenClaw, pi, OpenCode 및 모든 MCP 클라이언트를 위한 영구 메모리입니다.
+  Claude Code, Cursor, Gemini CLI, Codex CLI, OpenClaw, pi, OpenCode 및 모든 MCP 클라이언트를 위한 영구 메모리입니다.
 </p>
 
 <p align="center">
@@ -116,11 +116,6 @@ agentmemory는 hooks, MCP, REST API를 지원하는 모든 에이전트와 호�
 <td align="center" width="12.5%">
 <a href="../integrations/openclaw/"><img src="https://github.com/openclaw.png?size=120" alt="OpenClaw" width="48" height="48" /></a><br/>
 <strong>OpenClaw</strong><br/>
-<sub>native plugin + MCP</sub>
-</td>
-<td align="center" width="12.5%">
-<a href="../integrations/hermes/"><img src="https://github.com/NousResearch.png?size=120" alt="Hermes" width="48" height="48" /></a><br/>
-<strong>Hermes</strong><br/>
 <sub>native plugin + MCP</sub>
 </td>
 <td align="center" width="12.5%">
@@ -490,26 +485,6 @@ Restart OpenClaw. Verify with `curl http://localhost:3111/agentmemory/health`. O
 
 </details>
 
-<details>
-<summary><b>Hermes Agent (이 프롬프트를 붙여넣으세요)</b></summary>
-
-```text
-Install agentmemory for Hermes. Run `npx @agentmemory/agentmemory` in a separate terminal to start the memory server on localhost:3111. Then add this to ~/.hermes/config.yaml so Hermes can use agentmemory as an MCP server with all 51 memory tools:
-
-mcp_servers:
-  agentmemory:
-    command: npx
-    args: ["-y", "@agentmemory/mcp"]
-
-memory:
-  provider: agentmemory
-
-Verify with `curl http://localhost:3111/agentmemory/health`. Open http://localhost:3113 for the real-time viewer. For deeper 6-hook memory provider integration (pre-LLM context injection, turn capture, MEMORY.md mirroring, system prompt block), copy integrations/hermes from the agentmemory repo to ~/.hermes/plugins/agentmemory.
-```
-
-전체 가이드: [`integrations/hermes/`](../integrations/hermes/)
-
-</details>
 
 ### 다른 에이전트
 
@@ -543,7 +518,6 @@ agentmemory 항목은 `mcpServers` 형태를 사용하는 모든 호스트(Curso
 | **OpenCode (MCP only)** | `opencode.json` | 다른 형식 — 최상위 `mcp` 키, 명령은 배열로: `{"mcp": {"agentmemory": {"type": "local", "command": ["npx", "-y", "@agentmemory/mcp"], "enabled": true}}}`. |
 | **OpenCode (full plugin)** | `plugin/opencode/` | 세션 라이프사이클, 메시지, 도구, 오류를 다루는 22개의 자동 캡처 hooks. 두 개의 슬래시 명령(`/recall`, `/remember`). `plugin/opencode/`를 OpenCode workspace에 복사한 후 `opencode.json`에 플러그인 항목을 추가하십시오. 전체 hook 표 + gap 분석은 [`plugin/opencode/README.md`](../plugin/opencode/README.md) 참고. |
 | **pi** | `~/.pi/agent/extensions/agentmemory` | [`integrations/pi`](../integrations/pi/)를 복사하고 pi를 재시작. |
-| **Hermes Agent** | `~/.hermes/config.yaml` | `memory.provider: agentmemory`로 더 깊은 [memory provider plugin](../integrations/hermes/) 사용. |
 | **Qwen Code** | `~/.qwen/settings.json` | `agentmemory connect qwen`이 표준 `mcpServers` 블록을 기록. Hook 페이로드는 Claude Code와 필드 호환이므로, 기존 12-hook 스크립트가 수정 없이 동작합니다 — 동일한 `settings.json`의 `hooks` 섹션에서 연결. |
 | **Antigravity** (Gemini CLI 대체) | `mcp_config.json` (Antigravity의 User 디렉터리 내) | `agentmemory connect antigravity`가 표준 `mcpServers` 블록을 기록. macOS: `~/Library/Application Support/Antigravity/User/`. Linux: `~/.config/Antigravity/User/`. 2026-06-18 Gemini CLI sunset 이후 사용. |
 | **Kiro** | `~/.kiro/settings/mcp.json` | `agentmemory connect kiro`가 사용자 레벨 설정을 기록. 워크스페이스 오버라이드는 코드 옆 `.kiro/settings/mcp.json`에. |

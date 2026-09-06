@@ -7,7 +7,7 @@
     आपका कोडिंग एजेंट सब कुछ याद रखता है। बार-बार समझाने की ज़रूरत नहीं।
     Built on <a href="https://github.com/iii-hq/iii">iii engine</a>
   </strong><br/>
-  Claude Code, Cursor, Gemini CLI, Codex CLI, Hermes, OpenClaw, pi, OpenCode, और किसी भी MCP क्लाइंट के लिए स्थायी मेमोरी।
+  Claude Code, Cursor, Gemini CLI, Codex CLI, OpenClaw, pi, OpenCode, और किसी भी MCP क्लाइंट के लिए स्थायी मेमोरी।
 </p>
 
 <p align="center">
@@ -116,11 +116,6 @@ agentmemory किसी भी ऐसे एजेंट के साथ क�
 <td align="center" width="12.5%">
 <a href="../integrations/openclaw/"><img src="https://github.com/openclaw.png?size=120" alt="OpenClaw" width="48" height="48" /></a><br/>
 <strong>OpenClaw</strong><br/>
-<sub>native plugin + MCP</sub>
-</td>
-<td align="center" width="12.5%">
-<a href="../integrations/hermes/"><img src="https://github.com/NousResearch.png?size=120" alt="Hermes" width="48" height="48" /></a><br/>
-<strong>Hermes</strong><br/>
 <sub>native plugin + MCP</sub>
 </td>
 <td align="center" width="12.5%">
@@ -490,26 +485,6 @@ Restart OpenClaw. Verify with `curl http://localhost:3111/agentmemory/health`. O
 
 </details>
 
-<details>
-<summary><b>Hermes Agent (यह prompt paste करें)</b></summary>
-
-```text
-Install agentmemory for Hermes. Run `npx @agentmemory/agentmemory` in a separate terminal to start the memory server on localhost:3111. Then add this to ~/.hermes/config.yaml so Hermes can use agentmemory as an MCP server with all 51 memory tools:
-
-mcp_servers:
-  agentmemory:
-    command: npx
-    args: ["-y", "@agentmemory/mcp"]
-
-memory:
-  provider: agentmemory
-
-Verify with `curl http://localhost:3111/agentmemory/health`. Open http://localhost:3113 for the real-time viewer. For deeper 6-hook memory provider integration (pre-LLM context injection, turn capture, MEMORY.md mirroring, system prompt block), copy integrations/hermes from the agentmemory repo to ~/.hermes/plugins/agentmemory.
-```
-
-पूर्ण गाइड: [`integrations/hermes/`](../integrations/hermes/)
-
-</details>
 
 ### अन्य एजेंट्स
 
@@ -543,7 +518,6 @@ agentmemory entry `mcpServers` shape का उपयोग करने वा�
 | **OpenCode (केवल MCP)** | `opencode.json` | अलग shape — top-level `mcp` key, command array के रूप में: `{"mcp": {"agentmemory": {"type": "local", "command": ["npx", "-y", "@agentmemory/mcp"], "enabled": true}}}`। |
 | **OpenCode (पूर्ण plugin)** | `plugin/opencode/` | Session lifecycle, messages, tools, errors को कवर करने वाले 22 auto-capture hooks। दो slash commands (`/recall`, `/remember`)। `plugin/opencode/` को अपने OpenCode workspace में copy करें और plugin entry को `opencode.json` में जोड़ें। पूरी hook table + gap analysis के लिए [`plugin/opencode/README.md`](../plugin/opencode/README.md) देखें। |
 | **pi** | `~/.pi/agent/extensions/agentmemory` | [`integrations/pi`](../integrations/pi/) copy करें और pi restart करें। |
-| **Hermes Agent** | `~/.hermes/config.yaml` | गहरे [memory provider plugin](../integrations/hermes/) का उपयोग `memory.provider: agentmemory` के साथ करें। |
 | **Qwen Code** | `~/.qwen/settings.json` | `agentmemory connect qwen` standard `mcpServers` block लिखता है। Hook payload Claude Code के साथ field-compatible है, इसलिए मौजूदा 12-hook scripts modification के बिना काम करते हैं — उन्हें उसी `settings.json` के `hooks` section के माध्यम से जोड़ें। |
 | **Antigravity** (Gemini CLI को replace करता है) | `mcp_config.json` (Antigravity की User dir में) | `agentmemory connect antigravity` standard `mcpServers` block लिखता है। macOS: `~/Library/Application Support/Antigravity/User/`। Linux: `~/.config/Antigravity/User/`। 2026-06-18 Gemini CLI sunset के बाद उपयोग करें। |
 | **Kiro** | `~/.kiro/settings/mcp.json` | `agentmemory connect kiro` user-level config लिखता है। Workspace overrides आपके code के बगल में `.kiro/settings/mcp.json` में जाते हैं। |

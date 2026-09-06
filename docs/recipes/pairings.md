@@ -70,7 +70,7 @@ The graph teaches you the codebase. agentmemory remembers what you and the agent
 
 What it does: a single slash command (`/graphify .`) maps a whole project — application code, SQL schemas, R scripts, shell scripts, docs, PDFs, papers, images, videos — into one queryable knowledge graph. Output is three files: an interactive `graph.html`, a markdown `GRAPH_REPORT.md` with highlights and suggested questions, and the full `graph.json`. Also ships `graphify export callflow-html` for Mermaid call-flow architecture pages.
 
-Runs as a skill on Claude Code, Codex, OpenCode, Cursor, Gemini CLI, Copilot CLI, VS Code Copilot Chat, Aider, OpenClaw, Factory Droid, Trae, Hermes, Kimi Code, Kiro, Pi, and Google Antigravity.
+Runs as a skill on Claude Code, Codex, OpenCode, Cursor, Gemini CLI, Copilot CLI, VS Code Copilot Chat, Aider, OpenClaw, Factory Droid, Trae, Kimi Code, Kiro, Pi, and Google Antigravity.
 
 Recipe with agentmemory:
 

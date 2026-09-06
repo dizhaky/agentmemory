@@ -8,7 +8,7 @@
 
 <p align="center">
   <strong>Your pi sessions remember everything. No more re-explaining.</strong><br/>
-  <sub>Persistent cross-session memory via <a href="https://github.com/rohitg00/agentmemory">agentmemory</a> — shared with Claude Code, Codex CLI, Gemini CLI, Hermes, OpenClaw, and more.</sub>
+  <sub>Persistent cross-session memory via <a href="https://github.com/rohitg00/agentmemory">agentmemory</a> — shared with Claude Code, Codex CLI, Gemini CLI, OpenClaw, and more.</sub>
 </p>
 
 ---
@@ -68,10 +68,9 @@ You should see `agentmemory healthy` and a footer status like `🧠 agentmemory`
 ## Notes
 
 - This extension uses pi's extension API, not MCP, so it can hook directly into the agent lifecycle.
-- One local agentmemory server can be shared across pi, pi2, Hermes, OpenClaw, Claude Code, Codex CLI, and Gemini CLI.
+- One local agentmemory server can be shared across pi, pi2, OpenClaw, Claude Code, Codex CLI, and Gemini CLI.
 
 ## See also
 
 - [agentmemory main README](../../README.md)
-- [Hermes integration](../hermes/README.md)
 - [OpenClaw integration](../openclaw/README.md)

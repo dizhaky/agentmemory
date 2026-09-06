@@ -17,7 +17,6 @@ Generated from `src/cli/connect/index.ts`. Do not edit the block below by hand; 
 | Cursor | `cursor` | Using MCP (the only protocol Cursor speaks). Memory bridge runs at :3111 underneath. |
 | Droid (Factory.ai) | `droid` | Using MCP via ~/.factory/mcp.json. The `/mcp` slash command inside droid lists configured servers. Pass --with-hooks to also install the native ~/.factory/hooks.json auto-capture hooks. |
 | Gemini CLI | `gemini-cli` | Using MCP (the only protocol Gemini CLI speaks). Memory bridge runs at :3111 underneath. |
-| Hermes Agent | `hermes` | Using MCP. Hooks are also available, see https://github.com/rohitg00/agentmemory/tree/main/integrations/hermes. |
 | Kiro | `kiro` | Using MCP via ~/.kiro/settings/mcp.json (user-level). Workspace overrides live in .kiro/settings/mcp.json. |
 | OpenClaw | `openclaw` | Using MCP. Hooks are also available, see https://github.com/rohitg00/agentmemory/tree/main/integrations/openclaw. |
 | OpenCode | `opencode` | Using MCP via ~/.config/opencode/opencode.json (top-level `mcp` key). For full auto-capture, also install the bundled plugin in plugin/opencode/. |

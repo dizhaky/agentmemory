@@ -259,7 +259,7 @@ function persistentKV() {
 // event::session::stopped. consolidate-pipeline + auto-crystallize are full
 // corpus LLM work with no internal "nothing changed" guard, so firing them per
 // turn is a cost/latency storm for connected agents (Claude/Codex/Copilot/
-// Hermes). The debounce bounds corpus consolidation to once per cooldown.
+// other adapters). The debounce bounds corpus consolidation to once per cooldown.
 describe("session-stop consolidation debounce", () => {
   beforeEach(() => {
     vi.mocked(isConsolidationEnabled).mockReturnValue(true);

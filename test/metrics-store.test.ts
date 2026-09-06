@@ -32,11 +32,13 @@ describe("MetricsStore", () => {
     expect(typeof m?.lastFailureAt).toBe("number");
   });
 
-  it("caps the recent-calls ring buffer", async () => {
+  it("preserves every outcome in the 24-hour window", async () => {
     const store = new MetricsStore(fakeKv());
-    for (let i = 0; i < 60; i++) await store.record("f", 1, true);
-    const m = await store.get("f");
-    expect(m?.recentCalls?.length).toBe(50);
+    await store.record("f", 1, false);
+    for (let i = 0; i < 50; i++) await store.record("f", 1, true);
+    const m = (await store.getAll()).find((entry) => entry.functionId === "f");
+    expect(m?.recentCallCount).toBe(51);
+    expect(m?.recentFailureRate).toBe(1 / 51);
   });
 
   it("getAll ignores failures older than the 24h window", async () => {

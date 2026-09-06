@@ -13,7 +13,6 @@ import { adapter as continueDev } from "./continue.js";
 import { adapter as cursor } from "./cursor.js";
 import { adapter as droid } from "./droid.js";
 import { adapter as geminiCli } from "./gemini-cli.js";
-import { adapter as hermes } from "./hermes.js";
 import { adapter as kiro } from "./kiro.js";
 import { adapter as openclaw } from "./openclaw.js";
 import { adapter as opencode } from "./opencode.js";
@@ -40,7 +39,6 @@ export const ADAPTERS: readonly ConnectAdapter[] = [
   droid,
   opencode,
   openclaw,
-  hermes,
   pi,
   openhuman,
 ];

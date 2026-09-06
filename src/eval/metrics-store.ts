@@ -2,8 +2,6 @@ import type { FunctionMetrics } from "../types.js";
 import type { StateKV } from "../state/kv.js";
 import { KV } from "../state/schema.js";
 
-/** Cap on the per-function ring buffer of recent call outcomes. */
-const RECENT_CALLS_CAP = 50;
 /** Window for the recent failure rate surfaced in health output. */
 const METRICS_WINDOW_MS = 24 * 60 * 60 * 1000;
 
@@ -41,8 +39,8 @@ export class MetricsStore {
       m.failureCount += 1;
       m.lastFailureAt = now;
     }
-    m.recentCalls = [...(m.recentCalls ?? []), { t: now, ok: success }].slice(
-      -RECENT_CALLS_CAP,
+    m.recentCalls = [...(m.recentCalls ?? []), { t: now, ok: success }].filter(
+      (call) => now - call.t <= METRICS_WINDOW_MS,
     );
     if (qualityScore !== undefined) {
       const prevQualityCalls = this.qualityCallCounts.get(functionId) || 0;
