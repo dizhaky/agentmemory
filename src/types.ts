@@ -200,8 +200,11 @@ export interface FunctionMetrics {
    *  live problem from a cumulative counter polluted by long-fixed bugs. */
   lastFailureAt?: number;
   /** Ring buffer of recent call outcomes (not exposed by getAll; health
-   *  derives recentFailureRate from it). */
+   *  derives recentFailureRate from it). Legacy persisted format; migrated
+   *  to recentBuckets on the next record. */
   recentCalls?: Array<{ t: number; ok: boolean }>;
+  /** Bounded one-minute outcome buckets for the rolling 24-hour rate. */
+  recentBuckets?: Array<{ t: number; success: number; failure: number }>;
   /** Computed in getAll: calls inside the recent window. */
   recentCallCount?: number;
   /** Computed in getAll: failure rate over the recent window (0-1). */

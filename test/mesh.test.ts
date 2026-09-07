@@ -1,4 +1,9 @@
 import { describe, it, expect, beforeEach, vi } from "vitest";
+import { lookup } from "node:dns/promises";
+
+vi.mock("node:dns/promises", () => ({
+  lookup: vi.fn(async () => [{ address: "203.0.113.10", family: 4 }]),
+}));
 
 vi.mock("../src/logger.js", () => ({
   logger: { info: vi.fn(), warn: vi.fn(), error: vi.fn() },
@@ -74,6 +79,7 @@ describe("Mesh Functions", () => {
         sharedScopes: ["memories"],
       })) as { success: boolean; peer: MeshPeer };
 
+      expect(lookup).toHaveBeenCalledWith("peer1.example.com", { all: true });
       expect(result.success).toBe(true);
       expect(result.peer.url).toBe("https://peer1.example.com");
       expect(result.peer.name).toBe("peer-1");
@@ -83,6 +89,30 @@ describe("Mesh Functions", () => {
 
       const peers = await kv.list<MeshPeer>("mem:mesh");
       expect(peers.length).toBe(1);
+    });
+
+    it("rejects a peer whose DNS resolves to a private address", async () => {
+      vi.mocked(lookup).mockResolvedValueOnce([{ address: "10.0.0.1", family: 4 }]);
+      const result = (await sdk.trigger("mem::mesh-register", {
+        url: "https://private.example.com",
+        name: "private-peer",
+      })) as { success: boolean };
+
+      expect(lookup).toHaveBeenCalledWith("private.example.com", { all: true });
+      expect(result.success).toBe(false);
+      expect(await kv.list<MeshPeer>("mem:mesh")).toEqual([]);
+    });
+
+    it("allows registration when DNS resolution fails", async () => {
+      vi.mocked(lookup).mockRejectedValueOnce(new Error("getaddrinfo ENOTFOUND"));
+      const result = (await sdk.trigger("mem::mesh-register", {
+        url: "https://unresolved.example.com",
+        name: "unresolved-peer",
+      })) as { success: boolean };
+
+      expect(lookup).toHaveBeenCalledWith("unresolved.example.com", { all: true });
+      expect(result.success).toBe(true);
+      expect(await kv.list<MeshPeer>("mem:mesh")).toHaveLength(1);
     });
 
     it("uses expanded default sharedScopes when not provided", async () => {

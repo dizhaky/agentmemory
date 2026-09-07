@@ -92,6 +92,21 @@ describe("Codex plugin manifest (developers.openai.com/codex/plugins)", () => {
     );
   });
 
+  it("uses the portable published MCP entrypoint without retired Hermes paths", () => {
+    const mcp = readJson<{
+      mcpServers: Record<
+        string,
+        { command: string; args: string[]; env?: Record<string, string> }
+      >;
+    }>(join(pluginRoot, ".mcp.json"));
+    const server = mcp.mcpServers.agentmemory;
+
+    expect(server?.command).toBe("npx");
+    expect(server?.args).toEqual(["-y", "@agentmemory/mcp"]);
+    expect(JSON.stringify(server)).not.toContain(".hermes");
+    expect(JSON.stringify(server)).not.toContain("/Users/danizhaky/");
+  });
+
   it("hooks.codex.json contains only events Codex supports (no Subagent / SessionEnd / Notification / TaskCompleted / PostToolUseFailure)", () => {
     const hooksPath = join(pluginRoot, "hooks/hooks.codex.json");
     const hooks = readJson<{ hooks: Record<string, unknown> }>(hooksPath);

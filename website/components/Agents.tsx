@@ -55,16 +55,6 @@ const FEATURED: Agent[] = [
     sub: "GATEWAY PLUGIN",
   },
   {
-    id: "hermes",
-    name: "Hermes",
-    from: "Nous Research",
-    logo: "https://github.com/NousResearch.png",
-    accent: "#7A5BFF",
-    href: "https://github.com/NousResearch",
-    pitch: "Python plugin · yaml config",
-    sub: "FIRST-PARTY INTEGRATION",
-  },
-  {
     id: "pi",
     name: "pi",
     from: "pi",
@@ -290,11 +280,11 @@ export function Agents() {
       <header className="section-head">
         <span className="section-eyebrow">WORKS WITH</span>
         <h2 id="agents-title" className="section-title">
-          SEVEN NATIVE PLUGINS.<br />REST MCP-NATIVE.
+          SIX NATIVE PLUGINS.<br />REST MCP-NATIVE.
         </h2>
         <p className="section-lede">
           NATIVE PLUGINS FOR CLAUDE CODE, COPILOT CLI, CODEX CLI, OPENCLAW,
-          HERMES, PI, AND OPENHUMAN. EVERY OTHER MCP CLIENT GETS IT FOR FREE.
+          PI, AND OPENHUMAN. EVERY OTHER MCP CLIENT GETS IT FOR FREE.
           `agentmemory connect &lt;agent&gt;` AUTO-WIRES THEM ALL.
         </p>
       </header>

@@ -47,7 +47,6 @@ Anything not on this list that a contributor wants to pursue is welcome — open
 - [ ] **Additional maintainer onboarding** — at least one Maintainer from a different organization added via the process in `GOVERNANCE.md`. This is a prerequisite for advancing past the foundation's Growth Stage.
 - [ ] **Slack / Discord connector** — third source in the connector family.
 - [ ] **OpenSSF Scorecard** — enroll, reach a Silver-equivalent score. Badged in the README.
-- [ ] **Hermes integration hardening** — reach parity with the OpenClaw plugin surface (session lifecycle + tool-use hooks).
 - [ ] **Knowledge graph query language** — small DSL on top of `/agentmemory/graph` for multi-hop questions.
 - [ ] **First conference talk** — submit to KubeCon / LlamaCon / similar.
 

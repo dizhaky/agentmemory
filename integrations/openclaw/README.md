@@ -128,7 +128,7 @@ What the plugin does:
 - claims the `plugins.slots.memory = "agentmemory"` slot via `api.registerMemoryCapability({ promptBuilder })` so OpenClaw recognises it as the active memory plugin
 - recalls relevant long-term memory before the agent starts (via the `before_agent_start` hook)
 - captures completed conversation turns after the agent finishes (via the `agent_end` hook)
-- shares the same backend with Claude Code, Codex CLI, Gemini CLI, Hermes, pi, and other agents
+- shares the same backend with Claude Code, Codex CLI, Gemini CLI,  pi, and other agents
 
 ### Memory runtime (current scope)
 
@@ -147,7 +147,6 @@ The plugin currently registers a `promptBuilder` only — not a full `MemoryPlug
 ## See also
 
 - [agentmemory main README](../../README.md)
-- [Hermes integration](../hermes/README.md)
 - [pi integration](../pi/README.md)
 
 ## License

@@ -1,24 +1,24 @@
 #!/usr/bin/env node
-import { execSync } from "node:child_process";
+import { execFile } from "node:child_process";
 import { basename } from "node:path";
 //#region src/hooks/_project.ts
-function resolveProject(cwd) {
+const PROJECT_RESOLVE_TIMEOUT_MS = 250;
+async function resolveProject(cwd) {
 	const explicit = process.env["AGENTMEMORY_PROJECT_NAME"];
 	if (explicit && explicit.trim()) return explicit.trim();
 	const dir = cwd && cwd.trim() ? cwd : process.cwd();
-	try {
-		const top = execSync("git rev-parse --show-toplevel", {
+	return new Promise((resolve) => {
+		execFile("git", ["rev-parse", "--show-toplevel"], {
 			cwd: dir,
-			stdio: [
-				"ignore",
-				"pipe",
-				"ignore"
-			],
-			timeout: 3e3
-		}).toString().trim();
-		if (top) return basename(top);
-	} catch {}
-	return basename(dir);
+			encoding: "utf8",
+			maxBuffer: 4096,
+			timeout: PROJECT_RESOLVE_TIMEOUT_MS,
+			windowsHide: true
+		}, (error, stdout) => {
+			const toplevel = stdout.trim();
+			resolve(!error && toplevel ? basename(toplevel) : basename(dir));
+		});
+	});
 }
 //#endregion
 //#region src/hooks/pre-compact.ts
@@ -46,7 +46,7 @@ async function main() {
 	if (!data || typeof data !== "object") return;
 	if (isSdkChildContext(data)) return;
 	const sessionId = data.session_id || data.sessionId || "unknown";
-	const project = resolveProject(data.cwd);
+	const project = await resolveProject(data.cwd);
 	if (process.env["CLAUDE_MEMORY_BRIDGE"] === "true") try {
 		await fetch(`${REST_URL}/agentmemory/claude-bridge/sync`, {
 			method: "POST",

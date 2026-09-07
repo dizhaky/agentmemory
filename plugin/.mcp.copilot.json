@@ -11,7 +11,7 @@
         "AGENTMEMORY_URL": "${AGENTMEMORY_URL:-http://localhost:3111}",
         "AGENTMEMORY_SECRET": "${AGENTMEMORY_SECRET:-}",
         "AGENTMEMORY_TOOLS": "${AGENTMEMORY_TOOLS:-all}",
-        "PATH": "/opt/homebrew/bin:/Users/danizhaky/.hermes/node/bin:/Users/danizhaky/.nvm/versions/node/v24.11.0/bin:/Users/danizhaky/.local/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin"
+        "PATH": "/opt/homebrew/bin:/Users/danizhaky/.nvm/versions/node/v24.11.0/bin:/Users/danizhaky/.local/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin"
       },
       "tools": [
         "*"

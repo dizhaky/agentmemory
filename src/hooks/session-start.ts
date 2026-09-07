@@ -54,7 +54,7 @@ async function main() {
     ((data.session_id || data.sessionId) as string) ||
     `ses_${Date.now().toString(36)}`;
   const cwd = (data.cwd as string) || process.cwd();
-  const project = resolveProject(data.cwd as string | undefined);
+  const project = await resolveProject(data.cwd as string | undefined);
 
   const url = `${REST_URL}/agentmemory/session/start`;
   const init: RequestInit = {

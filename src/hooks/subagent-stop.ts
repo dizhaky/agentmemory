@@ -46,7 +46,7 @@ async function main() {
     body: JSON.stringify({
       hookType: "subagent_stop",
       sessionId,
-      project: resolveProject(data.cwd as string | undefined),
+      project: await resolveProject(data.cwd as string | undefined),
       cwd: (data.cwd as string | undefined) || process.cwd(),
       timestamp: new Date().toISOString(),
       data: {

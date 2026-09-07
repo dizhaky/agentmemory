@@ -70,7 +70,7 @@ PRs with commits lacking sign-off will not merge.
 | `src/hooks/` | The 12 auto-hooks that capture sessions in agents. |
 | `src/health/` | Liveness + readiness + alert thresholds. |
 | `src/state/` | KV schema, keyed mutex, access log. |
-| `integrations/` | First-party plugins: `hermes/`, `openclaw/`, `filesystem-watcher/`. |
+| `integrations/` | First-party plugins: `openclaw/`, `filesystem-watcher/`. |
 | `plugin/` | Claude Code plugin (`agentmemory@agentmemory`). |
 | `website/` | Marketing site (Next.js 16). |
 | `test/` | Vitest test suite. |

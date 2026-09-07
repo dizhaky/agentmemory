@@ -33,7 +33,7 @@ async function main() {
   if (isSdkChildContext(data)) return;
 
   const sessionId = ((data.session_id || data.sessionId) as string) || "unknown";
-  const project = resolveProject(data.cwd as string | undefined);
+  const project = await resolveProject(data.cwd as string | undefined);
 
   if (process.env["CLAUDE_MEMORY_BRIDGE"] === "true") {
     try {
