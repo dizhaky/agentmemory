@@ -102,9 +102,16 @@ describe("resolveProject — hook project basename resolver", () => {
     const source = readFileSync("src/hooks/_project.ts", "utf8");
     expect(source).toContain("node:child_process");
     expect(source).not.toContain("execFileSync");
-    expect(source).toContain("timeout: PROJECT_RESOLVE_TIMEOUT_MS");
+    expect(source).toContain("timeout: timeoutMs");
     expect(source).toMatch(
-      /const PROJECT_RESOLVE_TIMEOUT_MS = 500/,
+      /DEFAULT_PROJECT_RESOLVE_TIMEOUT_MS = (3000|[3-9]\d{3,})/,
     );
+    expect(source).toMatch(
+      /TELEMETRY_PROJECT_RESOLVE_TIMEOUT_MS = 500/,
+    );
+  });
+
+  it("respects caller-specified timeoutMs", async () => {
+    expect(await resolveProject(repoDir, 500)).toBe(REPO_NAME);
   });
 });
