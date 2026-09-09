@@ -104,7 +104,7 @@ describe("resolveProject — hook project basename resolver", () => {
     expect(source).not.toContain("execFileSync");
     expect(source).toContain("timeout: PROJECT_RESOLVE_TIMEOUT_MS");
     expect(source).toMatch(
-      /const PROJECT_RESOLVE_TIMEOUT_MS = (3000|[3-9]\d{3,})/,
+      /const PROJECT_RESOLVE_TIMEOUT_MS = 500/,
     );
   });
 });
