@@ -2,8 +2,8 @@
 import { execFile } from "node:child_process";
 import { basename } from "node:path";
 //#region src/hooks/_project.ts
-const PROJECT_RESOLVE_TIMEOUT_MS = 250;
-async function resolveProject(cwd) {
+const DEFAULT_PROJECT_RESOLVE_TIMEOUT_MS = 3e3;
+async function resolveProject(cwd, timeoutMs = DEFAULT_PROJECT_RESOLVE_TIMEOUT_MS) {
 	const explicit = process.env["AGENTMEMORY_PROJECT_NAME"];
 	if (explicit && explicit.trim()) return explicit.trim();
 	const dir = cwd && cwd.trim() ? cwd : process.cwd();
@@ -12,7 +12,7 @@ async function resolveProject(cwd) {
 			cwd: dir,
 			encoding: "utf8",
 			maxBuffer: 4096,
-			timeout: PROJECT_RESOLVE_TIMEOUT_MS,
+			timeout: timeoutMs,
 			windowsHide: true
 		}, (error, stdout) => {
 			const toplevel = stdout.trim();
@@ -55,7 +55,7 @@ async function main() {
 		body: JSON.stringify({
 			hookType: "post_tool_use",
 			sessionId,
-			project: await resolveProject(data.cwd),
+			project: await resolveProject(data.cwd, 500),
 			cwd: data.cwd || process.cwd(),
 			timestamp: (/* @__PURE__ */ new Date()).toISOString(),
 			data: {

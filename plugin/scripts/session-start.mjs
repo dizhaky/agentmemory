@@ -2,8 +2,8 @@
 import { execFile } from "node:child_process";
 import { basename } from "node:path";
 //#region src/hooks/_project.ts
-const PROJECT_RESOLVE_TIMEOUT_MS = 250;
-async function resolveProject(cwd) {
+const DEFAULT_PROJECT_RESOLVE_TIMEOUT_MS = 3e3;
+async function resolveProject(cwd, timeoutMs = DEFAULT_PROJECT_RESOLVE_TIMEOUT_MS) {
 	const explicit = process.env["AGENTMEMORY_PROJECT_NAME"];
 	if (explicit && explicit.trim()) return explicit.trim();
 	const dir = cwd && cwd.trim() ? cwd : process.cwd();
@@ -12,7 +12,7 @@ async function resolveProject(cwd) {
 			cwd: dir,
 			encoding: "utf8",
 			maxBuffer: 4096,
-			timeout: PROJECT_RESOLVE_TIMEOUT_MS,
+			timeout: timeoutMs,
 			windowsHide: true
 		}, (error, stdout) => {
 			const toplevel = stdout.trim();
@@ -50,7 +50,7 @@ async function main() {
 	if (isSdkChildContext(data)) return;
 	const sessionId = data.session_id || data.sessionId || `ses_${Date.now().toString(36)}`;
 	const cwd = data.cwd || process.cwd();
-	const project = await resolveProject(data.cwd);
+	const project = await resolveProject(data.cwd, INJECT_CONTEXT ? void 0 : 500);
 	const url = `${REST_URL}/agentmemory/session/start`;
 	const init = {
 		method: "POST",
