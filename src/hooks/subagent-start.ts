@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-import { resolveProject } from "./_project.js";
+import { resolveProject, TELEMETRY_PROJECT_RESOLVE_TIMEOUT_MS } from "./_project.js";
 
 // Inlined from ./sdk-guard so each hook bundles to a single self-contained
 // .mjs (matches the pattern used by every other hook entry in tsdown.config).
@@ -50,7 +50,7 @@ async function main() {
     body: JSON.stringify({
       hookType: "subagent_start",
       sessionId,
-      project: await resolveProject(data.cwd as string | undefined),
+      project: await resolveProject(data.cwd as string | undefined, TELEMETRY_PROJECT_RESOLVE_TIMEOUT_MS),
       cwd: (data.cwd as string | undefined) || process.cwd(),
       timestamp: new Date().toISOString(),
       data: {
