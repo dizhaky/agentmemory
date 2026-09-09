@@ -1,7 +1,7 @@
 import { execFile } from "node:child_process";
 import { basename } from "node:path";
 
-const PROJECT_RESOLVE_TIMEOUT_MS = 3000;
+const PROJECT_RESOLVE_TIMEOUT_MS = 500;
 
 // Resolution order: AGENTMEMORY_PROJECT_NAME env → git toplevel basename → cwd basename.
 export async function resolveProject(cwd?: string): Promise<string> {
