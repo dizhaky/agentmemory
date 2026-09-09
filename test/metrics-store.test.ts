@@ -100,6 +100,36 @@ describe("MetricsStore", () => {
     expect(f?.recentCalls).toBeUndefined(); // ring not exposed in health
   });
 
+  it("getAll excludes the boundary minute that straddles the 24h cutoff", async () => {
+    const now = 1_800_000_000_000 + 59_000;
+    const clock = vi.spyOn(Date, "now").mockReturnValue(now);
+    const cutoff = now - 24 * 60 * 60 * 1000;
+    const boundary = Math.floor(cutoff / 60_000) * 60_000;
+    const inside = boundary + 60_000;
+    const kvStore = new Map<string, FunctionMetrics>([
+      [
+        "edge",
+        {
+          functionId: "edge",
+          totalCalls: 2,
+          successCount: 1,
+          failureCount: 1,
+          avgLatencyMs: 1,
+          avgQualityScore: 100,
+          recentBuckets: [
+            { t: boundary, success: 0, failure: 1 },
+            { t: inside, success: 1, failure: 0 },
+          ],
+        },
+      ],
+    ]);
+    const store = new MetricsStore(fakeKv(kvStore));
+    const edge = (await store.getAll()).find((m) => m.functionId === "edge");
+    expect(edge?.recentCallCount).toBe(1);
+    expect(edge?.recentFailureRate).toBe(0);
+    clock.mockRestore();
+  });
+
   it("getAll reports a live rate for mixed recent outcomes", async () => {
     const store = new MetricsStore(fakeKv());
     await store.record("g", 1, true);
