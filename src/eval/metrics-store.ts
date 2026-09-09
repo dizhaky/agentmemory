@@ -40,10 +40,9 @@ export class MetricsStore {
       m.failureCount += 1;
       m.lastFailureAt = now;
     }
-    const cutoffBucket =
-      Math.floor((now - METRICS_WINDOW_MS) / METRICS_BUCKET_MS) * METRICS_BUCKET_MS;
+    const cutoff = now - METRICS_WINDOW_MS;
     const buckets = (m.recentBuckets ?? []).filter(
-      (bucket) => bucket.t >= cutoffBucket,
+      (bucket) => bucket.t >= cutoff,
     );
     for (const call of m.recentCalls ?? []) {
       if (call.t < now - METRICS_WINDOW_MS) continue;
@@ -97,10 +96,9 @@ export class MetricsStore {
       const legacyRecent = (m.recentCalls ?? []).filter(
         (c) => now - c.t <= METRICS_WINDOW_MS,
       );
-      const cutoffBucket =
-        Math.floor((now - METRICS_WINDOW_MS) / METRICS_BUCKET_MS) * METRICS_BUCKET_MS;
+      const cutoff = now - METRICS_WINDOW_MS;
       const recentBuckets = (m.recentBuckets ?? []).filter(
-        (bucket) => bucket.t >= cutoffBucket,
+        (bucket) => bucket.t >= cutoff,
       );
       const bucketCalls = recentBuckets.reduce(
         (sum, bucket) => sum + bucket.success + bucket.failure,
