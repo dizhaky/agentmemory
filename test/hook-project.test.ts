@@ -114,4 +114,24 @@ describe("resolveProject — hook project basename resolver", () => {
   it("respects caller-specified timeoutMs", async () => {
     expect(await resolveProject(repoDir, 500)).toBe(REPO_NAME);
   });
+
+  it("session-start uses telemetry timeout when injection is disabled", () => {
+    const source = readFileSync("src/hooks/session-start.ts", "utf8");
+    expect(source).toContain("TELEMETRY_PROJECT_RESOLVE_TIMEOUT_MS");
+    expect(source).toMatch(
+      /resolveProject\(\s*data\.cwd[^,]*,\s*INJECT_CONTEXT \? undefined : TELEMETRY_PROJECT_RESOLVE_TIMEOUT_MS/s,
+    );
+  });
+
+  it("plugin/scripts bundles contain caller-specific resolveProject timeouts", () => {
+    const notifBundle = readFileSync("plugin/scripts/notification.mjs", "utf8");
+    expect(notifBundle).toMatch(/resolveProject\([^,]+,\s*500\)/);
+    const sessionStartBundle = readFileSync(
+      "plugin/scripts/session-start.mjs",
+      "utf8",
+    );
+    expect(sessionStartBundle).toMatch(/resolveProject\([^,]+,\s*INJECT_CONTEXT \? void 0 : 500\)/);
+  });
 });
+
+

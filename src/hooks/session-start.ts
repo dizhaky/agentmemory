@@ -1,5 +1,8 @@
 #!/usr/bin/env node
-import { resolveProject } from "./_project.js";
+import {
+  resolveProject,
+  TELEMETRY_PROJECT_RESOLVE_TIMEOUT_MS,
+} from "./_project.js";
 
 // Inlined from ./sdk-guard so each hook bundles to a single self-contained
 // .mjs (matches the pattern used by every other hook entry in tsdown.config).
@@ -54,7 +57,10 @@ async function main() {
     ((data.session_id || data.sessionId) as string) ||
     `ses_${Date.now().toString(36)}`;
   const cwd = (data.cwd as string) || process.cwd();
-  const project = await resolveProject(data.cwd as string | undefined);
+  const project = await resolveProject(
+    data.cwd as string | undefined,
+    INJECT_CONTEXT ? undefined : TELEMETRY_PROJECT_RESOLVE_TIMEOUT_MS,
+  );
 
   const url = `${REST_URL}/agentmemory/session/start`;
   const init: RequestInit = {
