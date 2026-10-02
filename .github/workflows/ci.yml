@@ -9,6 +9,9 @@ on:
     branches: [main]
   workflow_dispatch:
 
+permissions:
+  contents: read
+
 # Cancel in-flight PR runs when a force-push lands. Keep push runs to
 # protect against partial state on main.
 concurrency:
@@ -18,6 +21,7 @@ concurrency:
 jobs:
   test:
     runs-on: ${{ matrix.os }}
+    timeout-minutes: 20
     strategy:
       # Don't bail the whole matrix on one cell's failure — we want to
       # see whether the same failure reproduces across OSes (e.g.
@@ -44,4 +48,6 @@ jobs:
       - run: npm ci --legacy-peer-deps --no-audit --no-fund
       - run: npm run build
       - run: npm run skills:check
-      - run: npm test
+      # Fork workers preserve mock-module isolation; bound concurrency to avoid
+      # worker startup starvation on newer Node runtimes and small CI runners.
+      - run: npm test -- --maxWorkers=1
